@@ -9,9 +9,14 @@ class NegociacaoController {
 
 	adiciona(event) {
 		event.preventDefault;
+
+		console.log('entrou aqui');
+
+		throw new Error('Você não pode adicionar dados');
+		return;
 		
 		let data = new Date(
-				this._inputData.value.split('-');
+				this._inputData.value.split('-')
 			);
 
 		this.limpaFormulario();
