@@ -1,54 +1,37 @@
-var form = document.querySelector('.form');
+var campos = [
+  document.querySelector('#data'),
+  document.querySelector('#quantidade'),
+  document.querySelector('#valor')  
+];
 
-var pegaDados = function() {
-	var 
-		data	 	= form.querySelector('#data'),
-		quantidade 	= form.querySelector('#quantidade'),
-		valor 		= form.querySelector('#valor')
-	;
+console.log(campos);
 
-	var valores = {
-		'data' 			: data.value,
-		'quantidade' 	: quantidade.value,
-		'valor'			: valor.value
-	};
+var tbody = document.querySelector('table tbody');
 
-	return valores;
-}
-
-var montaTr = function() {
-	var tr = document.createElement('tr');
-
-	for(i = 1; i < 5; i++ ) {
-		var td = document.createElement('td');
-		tr.appendChild(td);
-	}
-
-	return tr;
-}
-
-var preencheTr = function(tr, dados) {
-	var tds = tr.querySelectorAll('td');
-	tds[0].textContent = dados.data;
-	tds[1].textContent = dados.quantidade;
-	tds[2].textContent = dados.valor;
-	tds[3].textContent = dados.valor * dados.quantidade;
-
-	return tr;
-}
-
-var criaRegistro = function(event) {
-	event.preventDefault();
-
-	var 
-		tr = montaTr(),
-		dados = pegaDados(),
-		tbody = document.querySelector('tbody');
-	;
-
-	tr = preencheTr(tr, dados);
-	tbody.appendChild(tr);
-	form.reset();
-}
-
-form.addEventListener('submit', criaRegistro);
+document.querySelector('.form').addEventListener('submit', function(event) {
+    
+   event.preventDefault();
+   
+   var tr = document.createElement('tr');
+   
+   campos.forEach(function(campo) {
+       
+       var td = document.createElement('td');
+       td.textContent = campo.value;
+       tr.appendChild(td);
+   });
+   
+  var tdVolume = document.createElement('td');
+  tdVolume.textContent = campos[1].value * campos[2].value; 
+  
+  tr.appendChild(tdVolume);
+  
+  tbody.appendChild(tr);
+  
+  campos[0].value = '';
+  campos[1].value = 1;
+  campos[2].value = 0;
+  
+  campos[0].focus();
+   
+});
