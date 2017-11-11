@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Prendendo indexedDB</title>
+</head>
+<body>
+    <script src="js/app/models/Negociacao.js"></script>
+    <script>
+
+        var connection;
+
+        var openRequest = window.indexedDB.open('aluraframe', 4); 
+
+        openRequest.onupgradeneeded = event => {
+            console.log('Cria ou altera um banco já existente');
+
+            var minhaConnection = event.target.result;
+
+            if(minhaConnection.objectStoreNames.contains('negociacoes')) {
+                minhaConnection.deleteObjectStore('negociacoes');
+            }
+            minhaConnection.createObjectStore('negociacoes', { autoIncrement: true});
+        }
+
+        openRequest.onsuccess = event => {
+            console.log('Conexão obtida com sucesso');
+
+            connection = event.target.result;
+        }
+
+        openRequest.onerror = event => {
+            console.log(event.target.error);
+        }
+
+        function adiciona() {
+
+            //abre uma transação passando qual store e qual procedimento
+            let transaction = connection.transaction(['negociacoes'], 'readwrite');
+            //pega a store
+            let store = transaction.objectStore('negociacoes');
+
+            let negociacao = new Negociacao(new Date(), 1, 200);
+
+            //cria uma requisicao para adicionar uma negociação
+            let request = store.add(negociacao);
+
+            request.onsuccess = event => {
+                console.log("Negociação adicionada com sucesso");
+            }
+
+            request.onerror = event => {
+                console.log("Não foi possível adicionar a negociação");
+            }
+        }
+
+        function listaTodos() {
+            
+            let transaction = connection.transaction(['negociacoes'], 'readwrite');
+            let store = transaction.objectStore('negociacoes');
+            //abre um ponteiro para iterar a tabela
+            let cursor = store.openCursor();
+            let negociacoes = [];
+            cursor.onsuccess = event => {
+                //pega a posição atual do ponteiro
+                let atual = event.target.result;
+                if(atual) {
+                    let dado = atual.value;
+                    negociacoes.push(new Negociacao(new Date(dado._data), dado._quantidade, dado._valor));
+                    //move o ponteiro para a próxima posição
+                    atual.continue();
+                } else {
+                    console.log(negociacoes);
+                }
+            };
+            cursor.onerror = event => {
+                console.log(event.target.error.name);
+            }
+        }
+    </script>
+</body>
+</html>
