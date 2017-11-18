@@ -17,20 +17,37 @@ class NegociacaoController {
             new Mensagem(), new MensagemView($('#mensagemView')),
             'texto');  
 
-        this._ordemAtual = '';     
+        this._ordemAtual = '';
+        
+        ConnectionFactory.getConnection()
+            .then(connection => new NegociacaoDao(connection))
+            .then(dao => dao.listaTodos())
+            .then(negociacoes => 
+                negociacoes.forEach(negociacao => 
+                    this._listaNegociacoes.adiciona(negociacao)))
+            .catch(e => {
+                console.log(e);
+                this._mensagem.texto = "Não foi possivel obter as negociações";
+            })
     }
     
     adiciona(event) {
         
         event.preventDefault();
 
-        try {
-            this._listaNegociacoes.adiciona(this._criaNegociacao());
-            this._mensagem.texto = 'Negociação adicionada com sucesso'; 
-            this._limpaFormulario();   
-        } catch(erro) {
-            this._mensagem.texto = erro;
-        }
+        let negociacao = this._criaNegociacao();
+
+        ConnectionFactory
+            .getConnection()
+            .then(connection => new NegociacaoDao(connection).adiciona(negociacao))
+            .then(() => {
+                this._listaNegociacoes.adiciona(this._criaNegociacao());
+                this._mensagem.texto = 'Negociação adicionada com sucesso'; 
+                this._limpaFormulario();   
+            })
+            .catch(erro => {
+                this._mensagem.texto = erro;
+            });
     }
     
     importaNegociacoes() {
@@ -48,6 +65,12 @@ class NegociacaoController {
     
     apaga() {
         
+        ConnectionFactory.getConnection()
+            .then(connection => new NegociacaoDao(connection))
+            .then(dao => dao.apagaTodos())
+            .then(mensagem => this._mensagem.texto = mensagem)
+            .catch(e => console.log(e));
+        
         this._listaNegociacoes.esvazia();
         this._mensagem.texto = 'Negociações apagadas com sucesso';
     }
@@ -56,8 +79,8 @@ class NegociacaoController {
         
         return new Negociacao(
             DateHelper.textoParaData(this._inputData.value),
-            this._inputQuantidade.value,
-            this._inputValor.value);    
+            parseInt(this._inputQuantidade.value),
+            parseInt(this._inputValor.value));    
     }
     
     _limpaFormulario() {

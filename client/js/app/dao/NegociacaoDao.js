@@ -25,4 +25,52 @@ class NegociacaoDao {
             };
         })
     }
+
+    listaTodos() {
+
+        return new Promise((resolve, reject) => {
+
+            let negociacoes = [];
+            
+            let cursor = this._connection
+                .transaction([this._store], 'readonly')
+                .objectStore(this._store)
+                .openCursor();
+
+            cursor.onsuccess = e => {
+                let atual = e.target.result;
+
+                if(atual) {
+                    let dado = atual.value;
+                    negociacoes.push(new Negociacao(new Date(dado._data), dado._quantidade, dado._valor));
+                    atual.continue();
+                } else {
+                    resolve(negociacoes);
+                }
+            }
+
+            cursor.onerror = e => {
+                console.log(e);
+                reject('Não foi possível obter negociações');
+            }
+        });
+    }
+
+    apagaTodos() {
+        
+        return new Promise((reject, resolve) => {
+
+            let request = this._connection
+                .transaction([this._store], 'readwrite')
+                .objectStore(this._store)
+                .clear();
+
+            request.onsuccess = e => resolve('Negociações apagadas com sucesso');
+
+            request.onerror = e => {
+                console.log(e);
+                reject('Não foi possível apagar as negociações');
+            }
+        });
+    }
 }
