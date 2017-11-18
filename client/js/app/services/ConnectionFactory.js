@@ -18,7 +18,7 @@ var ConnectionFactory = (function() {
 
 			return new Promise((resolve, reject) => {
 
-				let openRequest = window.indexedDB.open('aluraframe', version);
+				let openRequest = window.indexedDB.open(dbname, version);
 
 				openRequest.onupgradeneeded = e => {
 
@@ -49,10 +49,8 @@ var ConnectionFactory = (function() {
 		_createStores(connection) {
 
 			stores.forEach(store => {
-				if (connection.target.result.objectStoreNames.contains(store)) 
-					connection.target.result.deleteObjectStore(store);
-				
-				connection.target.result.createObjectStore(store, { autoIncrement: true});
+				if (connection.objectStoreNames.contains(store)) connection.deleteObjectStore(store);
+				connection.createObjectStore(store, { autoIncrement: true});
 			})
 		}
 
@@ -62,6 +60,7 @@ var ConnectionFactory = (function() {
 
 				close();
 				connection = null;
+				close = null;
 			}
 		}
 	}
