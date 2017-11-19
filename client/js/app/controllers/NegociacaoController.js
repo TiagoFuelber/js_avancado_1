@@ -19,6 +19,11 @@ class NegociacaoController {
 
         this._ordemAtual = '';
         
+        this._init();    
+    }
+
+    _init() {
+
         ConnectionFactory.getConnection()
             .then(connection => new NegociacaoDao(connection))
             .then(dao => dao.listaTodos())
@@ -29,6 +34,10 @@ class NegociacaoController {
                 console.log(e);
                 this._mensagem.texto = "Não foi possivel obter as negociações";
             })
+
+        setInterval(() => {
+            this.importaNegociacoes();
+        }, 3000);
     }
     
     adiciona(event) {
