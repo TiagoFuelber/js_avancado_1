@@ -17,6 +17,7 @@ class ListaNegociacoes {
 
     esvazia() {
         
+        console.log('chamou esvazia');
         this._negociacoes = [];
     }
     

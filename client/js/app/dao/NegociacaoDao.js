@@ -3,7 +3,7 @@ class NegociacaoDao {
     constructor(connection) {
 
         this._connection = connection;
-        this._store = "negociacoes";
+        this._store = 'negociacoes';
     }
 
     adiciona(negociacao) {
@@ -11,9 +11,9 @@ class NegociacaoDao {
         return new Promise((resolve, reject) => {
 
             let request = this._connection
-                .transaction([this._store], 'readwrite')
+                .transaction(this._store, 'readwrite')
                 .objectStore(this._store)
-                .add(negociacao);
+                .add(new Negociacao(new Date(negociacao._data), negociacao._quantidade, negociacao._valor));
     
             request.onsuccess = e => {
                 resolve();
@@ -33,7 +33,7 @@ class NegociacaoDao {
             let negociacoes = [];
             
             let cursor = this._connection
-                .transaction([this._store], 'readonly')
+                .transaction(this._store, 'readonly')
                 .objectStore(this._store)
                 .openCursor();
 
@@ -61,7 +61,7 @@ class NegociacaoDao {
         return new Promise((reject, resolve) => {
 
             let request = this._connection
-                .transaction([this._store], 'readwrite')
+                .transaction(this._store, 'readwrite')
                 .objectStore(this._store)
                 .clear();
 

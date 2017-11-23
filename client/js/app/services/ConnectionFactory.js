@@ -1,7 +1,7 @@
 var ConnectionFactory = (function() {
 	
 	const stores = ['negociacoes'];
-	const version = 4;
+	const version = 5;
 	const dbname = 'aluraframe';
 
 	var connection = null;
@@ -46,7 +46,7 @@ var ConnectionFactory = (function() {
 			});
 		}
 
-		_createStores(connection) {
+		static _createStores(connection) {
 
 			stores.forEach(store => {
 				if (connection.objectStoreNames.contains(store)) connection.deleteObjectStore(store);
