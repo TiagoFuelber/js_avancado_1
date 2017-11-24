@@ -20,6 +20,5 @@ class HttpService {
             body: JSON.stringify(dado)
         })
         .then(res => this._handleErrors(res))
-
     }
 }
