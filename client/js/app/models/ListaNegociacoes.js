@@ -17,21 +17,20 @@ class ListaNegociacoes {
 
     esvazia() {
         
-        console.log('chamou esvazia');
         this._negociacoes = [];
     }
     
     get volumeTotal() {
        return this._negociacoes.reduce((total, n) => total + n.volume, 0.0);
     }
+    
+    ordena(criterio) {
 
-    ordena(regra) {
-
-        this._negociacoes.sort(regra);
+        this._negociacoes.sort(criterio);        
     }
-
+    
     inverteOrdem() {
 
         this._negociacoes.reverse();
-    }
+    }    
 }
